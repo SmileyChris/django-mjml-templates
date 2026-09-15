@@ -55,5 +55,41 @@ a `(subject, text, html)` named tuple. Both are on `.mjml` templates only:
   the HTML run through `html2text`.
 - **html** — the compiled email.
 
+## Absolute URLs
+
+A relative link is dead in an email — there is no page for the mail client to resolve it
+against. Every `.mjml` render rewrites `href`, `src`, `background` and CSS `url()` values
+against a base URL, so `{% url %}`, `{% static %}` and hand-written paths all come out
+absolute. Anything already carrying a scheme (`https:`, `mailto:`, `tel:`, `cid:`,
+`data:`), a protocol-relative `//host/...`, or a bare `#fragment` is left alone.
+
+The base is worked out in this order:
+
+1. **The request**, if you passed one — `render_email(context, request, ...)`.
+2. **`MJML_BASE_URL`** as a full URL, e.g. `"https://example.com"`.
+3. **`MJML_BASE_URL` as a scheme alone** (the default, `"https://"`) paired with
+   `django.contrib.sites` — so with the sites app installed there is nothing to
+   configure.
+
+If none of those give a base — no request, no sites app, no full URL — URLs are left
+relative and nothing is raised. Sending outside a request cycle, from a Celery task or a
+management command, therefore wants either `django.contrib.sites` installed or
+`MJML_BASE_URL` set to a full URL. A `MJML_BASE_URL` with no scheme at all
+(`"example.com"`) is an `ImproperlyConfigured`.
+
+The rewrite only reaches URLs in markup. For one a template writes out as text — and for
+the sibling `.txt`, which has no markup to rewrite — use `mjml_base`:
+
+```html
+<mj-text>Trouble with the button? Paste {{ mjml_base }}{% url "signup" %}</mj-text>
+```
+
+```
+{# email/welcome.txt #}
+Sign up: {{ mjml_base }}{% url "signup" %}
+```
+
+A `mjml_base` you pass in the context yourself wins over the derived one.
+
 MJML is compiled with [mjml-python](https://pypi.org/project/mjml-python/) (the Rust `mrml`
 port), so there is no Node dependency. Plain-text fallback uses `html2text`.

@@ -1,6 +1,6 @@
 [project]
 name = "django-mjml-templates"
-version = "1.0.0"
+version = "1.1.0"
 description = "A drop-in Django template engine that also renders .mjml email templates"
 readme = "README.md"
 license = "MIT"

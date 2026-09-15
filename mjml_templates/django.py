@@ -23,6 +23,15 @@ from django.template.backends.django import Template, reraise
 from django.template.loader import get_template
 from mjml import mjml2html
 
+from mjml_templates.absolute import absolutise, base_url
+
+
+def _with_base(context, base: str) -> dict:
+    """``mjml_base`` for a template that needs to write a URL itself -- in plain text, or
+    in the ``.txt`` sibling, where there is no attribute for the rewrite to find. A value
+    already in the context wins."""
+    return {"mjml_base": base, **(context or {})}
+
 
 class EmailParts(NamedTuple):
     subject: str
@@ -32,7 +41,9 @@ class EmailParts(NamedTuple):
 
 class MJMLTemplate(Template):
     def render(self, context=None, request=None) -> str:
-        return mjml2html(super().render(context, request), disable_comments=True)
+        base = base_url(request)
+        rendered = mjml2html(super().render(_with_base(context, base), request), disable_comments=True)
+        return absolutise(rendered, base)
 
     def render_email_parts(self, context=None, request=None, *, subject: str = "") -> EmailParts:
         context = context or {}
@@ -57,6 +68,7 @@ class MJMLTemplate(Template):
     def _text(name: str, context, request, rendered: str) -> str:
         if name.endswith(".mjml"):
             try:
+                context = _with_base(context, base_url(request))
                 return get_template(name[: -len(".mjml")] + ".txt").render(context, request)
             except TemplateDoesNotExist:
                 pass
