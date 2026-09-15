@@ -1,0 +1,58 @@
+[project]
+name = "django-mjml-templates"
+version = "1.0.0"
+description = "A drop-in Django template engine that also renders .mjml email templates"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Chris Beaven", email = "chris@tactful.co.nz" }]
+requires-python = ">=3.12"
+dependencies = [
+  "django>=4.2",
+  "mjml-python>=1.3",
+  "html2text>=2024.2",
+]
+keywords = ["django", "mjml", "email", "templates"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: Django",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.0",
+  "Framework :: Django :: 5.1",
+  "Framework :: Django :: 5.2",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Communications :: Email",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/SmileyChris/django-mjml-templates"
+Changelog = "https://github.com/SmileyChris/django-mjml-templates/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=7.1.0",
+  "pytest-django>=4.9",
+  "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mjml_templates"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=mjml_templates --cov-report=term-missing"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
