@@ -2,16 +2,19 @@
 
 A drop-in replacement for Django's template engine that also understands `.mjml` files,
 so an email template is an ordinary Django template that happens to compile to email HTML.
+MJML is compiled with [mjml-python](https://pypi.org/project/mjml-python/), the Rust `mrml`
+port, so there is no Node dependency; the plain-text fallback uses
+[html2text](https://pypi.org/project/html2text/).
+
+## Setup
 
 ```sh
 uv add django-mjml-templates   # or pip install
 ```
 
-## Setup
-
-Swap the backend; everything else about `TEMPLATES` stays as it was. The engine is still
-named `django` (Django takes the default name from the module segment of `BACKEND`), so
-`engines["django"]` and `using="django"` keep working.
+Then swap the backend; everything else about `TEMPLATES` stays as it was. The engine
+is still named `django` (Django takes the default name from the module segment of
+`BACKEND`), so `engines["django"]` and `using="django"` keep working.
 
 ```python
 TEMPLATES = [{
@@ -80,8 +83,9 @@ MJML_BASE_URL = "https://"              # scheme only (the default) — paired w
 
 The default means projects with `django.contrib.sites` installed need no setting at all.
 With no request, no full URL and no sites app there is no base to work from, and URLs are
-left relative rather than raising — so sending from a Celery task or a management command
-wants one of the two. (A `MJML_BASE_URL` with no scheme at all is an `ImproperlyConfigured`.)
+left relative rather than raising — so sending from a Celery task or a management
+command wants one of the two. (A `MJML_BASE_URL` with no scheme at all is an
+`ImproperlyConfigured`.)
 
 The rewrite only reaches URLs in markup. Where a template writes one out as text, and in
 the `.txt` sibling where there is no markup at all, use `mjml_base`:
@@ -92,11 +96,3 @@ Sign up: {{ mjml_base }}{% url "signup" %}
 ```
 
 Pass your own `mjml_base` in the context and it wins over the derived one.
-
-## How it works
-
-MJML is compiled with [mjml-python](https://pypi.org/project/mjml-python/), the Rust
-`mrml` port, so there is no Node dependency. The plain-text fallback uses
-[html2text](https://pypi.org/project/html2text/).
-
-MIT licensed.
