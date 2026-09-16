@@ -1,10 +1,13 @@
 # django-mjml-templates
 
-A drop-in replacement for Django's template engine that also understands `.mjml` files.
+A drop-in replacement for Django's template engine that also understands `.mjml` files,
+so an email template is an ordinary Django template that happens to compile to email HTML.
 
 ```sh
 uv add django-mjml-templates   # or pip install
 ```
+
+## Setup
 
 Swap the backend; everything else about `TEMPLATES` stays as it was. The engine is still
 named `django` (Django takes the default name from the module segment of `BACKEND`), so
@@ -18,10 +21,14 @@ TEMPLATES = [{
 }]
 ```
 
-Every other template renders exactly as before. A template whose name ends in `.mjml`
-(or a `from_string` whose code starts with `<mjml`) is a Django template first —
-`{% extends %}`, loops, `{% url %}`, autoescaping — and the MJML that produces is
-compiled to email HTML on render.
+Every other template renders exactly as before. Only a template whose name ends in
+`.mjml` — or a `from_string` whose code starts with `<mjml` — is treated as email.
+
+## Writing an email
+
+An `.mjml` file is a Django template first: `{% extends %}`, loops, `{% url %}` and
+autoescaping all run as usual, and the MJML that produces is compiled on render. See
+[the MJML docs](https://documentation.mjml.io/) for the components themselves.
 
 ```html
 {# templates/email/welcome.mjml #}
@@ -30,66 +37,66 @@ compiled to email HTML on render.
   <mj-body>
     <mj-section><mj-column>
       <mj-text>Hi {{ user.first_name }}, thanks for signing up.</mj-text>
-      <mj-button href="{{ link }}">Get started</mj-button>
+      <mj-button href="{% url 'start' %}">Get started</mj-button>
     </mj-column></mj-section>
   </mj-body>
 </mjml>
 ```
 
+`<mj-title>` doubles as the subject line. A sibling `email/welcome.txt`, if you write one,
+becomes the plain-text body; without it the HTML is run through `html2text`.
+
+## Sending
+
 ```python
 from django.template.loader import get_template
 
-get_template("email/welcome.mjml").render_email({"user": user, "link": link}, to=[user.email]).send()
+get_template("email/welcome.mjml").render_email({"user": user}, request, to=[user.email]).send()
 ```
 
-`render_email(context, request=None, *, subject="", **kwargs)` returns an unsent
-`EmailMultiAlternatives` with the plain-text body and the HTML alternative attached, so
-you can still `attach()` a file before sending. `kwargs` go to `EmailMultiAlternatives`:
-`to`, `from_email`, `bcc`, `reply_to`, `headers`, and so on.
+`render_email(context, request=None, *, subject="", **kwargs)` returns an *unsent*
+`EmailMultiAlternatives` with both bodies attached, so you can still `attach()` a file
+first. `kwargs` go straight to `EmailMultiAlternatives`: `to`, `from_email`, `bcc`,
+`reply_to`, `headers`, and so on.
 
-For the raw pieces, `render_email_parts(context, request=None, *, subject="")` returns
-a `(subject, text, html)` named tuple. Both are on `.mjml` templates only:
-
-- **subject** — as given, else the rendered `<mj-title>`, else `ValueError`.
-- **text** — `email/welcome.txt` rendered with the same context if it exists, else
-  the HTML run through `html2text`.
-- **html** — the compiled email.
+`render_email_parts(context, request=None, *, subject="")` gives the raw
+`(subject, text, html)` named tuple instead. Both methods exist on `.mjml` templates only.
+The subject is the one you pass, else the rendered `<mj-title>`, else a `ValueError`.
 
 ## Absolute URLs
 
 A relative link is dead in an email — there is no page for the mail client to resolve it
-against. Every `.mjml` render rewrites `href`, `src`, `background` and CSS `url()` values
-against a base URL, so `{% url %}`, `{% static %}` and hand-written paths all come out
-absolute. Anything already carrying a scheme (`https:`, `mailto:`, `tel:`, `cid:`,
-`data:`), a protocol-relative `//host/...`, or a bare `#fragment` is left alone.
+against. So every `.mjml` render rewrites `href`, `src`, `background` and CSS `url()`
+against a base URL, and `{% url %}`, `{% static %}` and hand-written paths all come out
+absolute. Anything already carrying a scheme, a protocol-relative `//host/…` or a bare
+`#fragment` is left alone.
 
-The base is worked out in this order:
+The base comes from the request if you pass one, and otherwise from `MJML_BASE_URL`:
 
-1. **The request**, if you passed one — `render_email(context, request, ...)`.
-2. **`MJML_BASE_URL`** as a full URL, e.g. `"https://example.com"`.
-3. **`MJML_BASE_URL` as a scheme alone** (the default, `"https://"`) paired with
-   `django.contrib.sites` — so with the sites app installed there is nothing to
-   configure.
-
-If none of those give a base — no request, no sites app, no full URL — URLs are left
-relative and nothing is raised. Sending outside a request cycle, from a Celery task or a
-management command, therefore wants either `django.contrib.sites` installed or
-`MJML_BASE_URL` set to a full URL. A `MJML_BASE_URL` with no scheme at all
-(`"example.com"`) is an `ImproperlyConfigured`.
-
-The rewrite only reaches URLs in markup. For one a template writes out as text — and for
-the sibling `.txt`, which has no markup to rewrite — use `mjml_base`:
-
-```html
-<mj-text>Trouble with the button? Paste {{ mjml_base }}{% url "signup" %}</mj-text>
+```python
+MJML_BASE_URL = "https://example.com"   # a full URL, used as-is
+MJML_BASE_URL = "https://"              # scheme only (the default) — paired with the current Site
 ```
+
+The default means projects with `django.contrib.sites` installed need no setting at all.
+With no request, no full URL and no sites app there is no base to work from, and URLs are
+left relative rather than raising — so sending from a Celery task or a management command
+wants one of the two. (A `MJML_BASE_URL` with no scheme at all is an `ImproperlyConfigured`.)
+
+The rewrite only reaches URLs in markup. Where a template writes one out as text, and in
+the `.txt` sibling where there is no markup at all, use `mjml_base`:
 
 ```
 {# email/welcome.txt #}
 Sign up: {{ mjml_base }}{% url "signup" %}
 ```
 
-A `mjml_base` you pass in the context yourself wins over the derived one.
+Pass your own `mjml_base` in the context and it wins over the derived one.
 
-MJML is compiled with [mjml-python](https://pypi.org/project/mjml-python/) (the Rust `mrml`
-port), so there is no Node dependency. Plain-text fallback uses `html2text`.
+## How it works
+
+MJML is compiled with [mjml-python](https://pypi.org/project/mjml-python/), the Rust
+`mrml` port, so there is no Node dependency. The plain-text fallback uses
+[html2text](https://pypi.org/project/html2text/).
+
+MIT licensed.
