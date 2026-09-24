@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 (2026-09-24)
 
 - The plain-text fallback no longer prints MJML's layout as Markdown tables (rows of
   `|` and `---` around every paragraph): tables marked `role="presentation"` are
