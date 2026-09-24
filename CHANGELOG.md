@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- The plain-text fallback no longer prints MJML's layout as Markdown tables (rows of
+  `|` and `---` around every paragraph): tables marked `role="presentation"` are
+  unwrapped before `html2text` runs, so only a real table -- an `<mj-table>` -- prints
+  as one.
+- A button comes out as `Label: url` on a line of its own, rather than `[Label](url)`.
+- No trailing spaces on the plain-text lines.
+
 ## 1.1.0 (2026-09-16)
 
 - Relative URLs in rendered `.mjml` output are made absolute, so links and images work

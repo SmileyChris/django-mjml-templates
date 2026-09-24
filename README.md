@@ -47,7 +47,9 @@ autoescaping all run as usual, and the MJML that produces is compiled on render.
 ```
 
 `<mj-title>` doubles as the subject line. A sibling `email/welcome.txt`, if you write one,
-becomes the plain-text body; without it the HTML is run through `html2text`.
+becomes the plain-text body; without it the HTML is run through `html2text`, with MJML's
+layout tables unwrapped first (an `<mj-table>` stays a table) and each button written as
+`Label: url`.
 
 ## Sending
 

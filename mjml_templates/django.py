@@ -15,7 +15,6 @@ import html
 import re
 from typing import NamedTuple
 
-import html2text
 from django.core.mail import EmailMultiAlternatives
 from django.template import TemplateDoesNotExist
 from django.template.backends import django as django_backend
@@ -24,6 +23,7 @@ from django.template.loader import get_template
 from mjml import mjml2html
 
 from mjml_templates.absolute import absolutise, base_url
+from mjml_templates.plain import to_text
 
 
 def _with_base(context, base: str) -> dict:
@@ -72,10 +72,7 @@ class MJMLTemplate(Template):
                 return get_template(name[: -len(".mjml")] + ".txt").render(context, request)
             except TemplateDoesNotExist:
                 pass
-        converter = html2text.HTML2Text()
-        converter.body_width = 0
-        converter.ignore_images = True
-        return converter.handle(rendered)
+        return to_text(rendered)
 
 
 class DjangoTemplates(django_backend.DjangoTemplates):
