@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+- Plain-text fallback: `**bold**` and `*italic*` come out as plain words, and a real
+  table's columns are padded so the pipes line up.
+- Plain-text fallback: HTML entities keep their characters (`é © — Māori …`) rather than
+  an ASCII approximation (`cafe (C) 2026 -- Maori ...`).
+- Plain-text fallback: an inline link is written `label (url)`; a link whose label is
+  its address (a URL, `mailto:` or `tel:`) is just the address, and a `#` or missing
+  `href` is just the label.
+- Plain-text fallback: a line that looks like a Markdown list item (`1. First`, `- Dash`)
+  is no longer backslash-escaped.
+- Plain-text fallback: `<h1>` and `<h2>` are underlined with `=` and `-`, rather than
+  prefixed with `#` and `##`; `<h3>` to `<h6>` are plain lines.
+
 ## 1.2.0 (2026-09-24)
 
 - The plain-text fallback no longer prints MJML's layout as Markdown tables (rows of
