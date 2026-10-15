@@ -9,8 +9,9 @@
 - Plain-text fallback: an inline link is written `label (url)`; a link whose label is
   its address (a URL, `mailto:` or `tel:`) is just the address, and a `#` or missing
   `href` is just the label.
-- Plain-text fallback: a line that looks like a Markdown list item (`1. First`, `- Dash`)
-  is no longer backslash-escaped.
+- Fix: the plain-text fallback no longer backslash-escapes a line that begins like a
+  Markdown list item, so a paragraph starting `1. First` or `- Dash` is no longer
+  written `1\. First` or `\- Dash`.
 - Plain-text fallback: headings are underlined rather than prefixed with `#`: the two
   shallowest levels an email uses get `=` then `-` (so an email that starts at `<h2>` still
   has a hierarchy), and any deeper heading is a plain line.
