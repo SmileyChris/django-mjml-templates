@@ -1,37 +1,33 @@
 # django-mjml-templates
 
-A drop-in replacement for Django's template engine that also understands `.mjml` files,
-so an email template is an ordinary Django template that happens to compile to email HTML.
-MJML is compiled with [mjml-python](https://pypi.org/project/mjml-python/), the Rust `mrml`
-port, so there is no Node dependency; the plain-text fallback uses
-[html2text](https://pypi.org/project/html2text/).
+Write email templates as `.mjml` files with the Django template language. A drop-in
+replacement for Django's template backend: no Node, no new template engine to learn.
+MJML is compiled by [mjml-python](https://pypi.org/project/mjml-python/) and the plain-text
+part comes from [html2text](https://pypi.org/project/html2text/).
 
 ## Setup
 
 ```sh
-uv add django-mjml-templates   # or pip install
+pip install django-mjml-templates
 ```
 
-Then swap the backend; everything else about `TEMPLATES` stays as it was. The engine
-is still named `django` (Django takes the default name from the module segment of
-`BACKEND`), so `engines["django"]` and `using="django"` keep working.
+Swap the backend in `TEMPLATES`; everything else stays as it was:
 
 ```python
 TEMPLATES = [{
-    "BACKEND": "mjml_templates.django.DjangoTemplates",   # was django.template.backends.django.DjangoTemplates
-    "APP_DIRS": True,
-    "OPTIONS": {"context_processors": [...]},
+    "BACKEND": "mjml_templates.django.DjangoTemplates",  # was django.template.backends.django.DjangoTemplates
+    ...
 }]
 ```
 
-Every other template renders exactly as before. Only a template whose name ends in
-`.mjml` — or a `from_string` whose code starts with `<mjml` — is treated as email.
+Only templates ending in `.mjml` are treated as email; every other template renders as before,
+and the engine keeps its `django` name, so `engines["django"]` still works.
 
 ## Writing an email
 
-An `.mjml` file is a Django template first: `{% extends %}`, loops, `{% url %}` and
-autoescaping all run as usual, and the MJML that produces is compiled on render. See
-[the MJML docs](https://documentation.mjml.io/) for the components themselves.
+An `.mjml` file is a Django template first (`{% extends %}`, `{% url %}` and autoescaping all
+work), compiled to email HTML on render. See the [MJML docs](https://documentation.mjml.io/)
+for components.
 
 ```html
 {# templates/email/welcome.mjml #}
@@ -46,10 +42,8 @@ autoescaping all run as usual, and the MJML that produces is compiled on render.
 </mjml>
 ```
 
-`<mj-title>` doubles as the subject line. A sibling `email/welcome.txt`, if you write one,
-becomes the plain-text body; without it the HTML is run through `html2text`, with MJML's
-layout tables unwrapped first (an `<mj-table>` stays a table) and each button written as
-`Label: url`.
+`<mj-title>` is the subject. Add a sibling `email/welcome.txt` for a hand-written plain-text
+body; without one it's generated from the HTML.
 
 ## Sending
 
@@ -59,61 +53,36 @@ from django.template.loader import get_template
 get_template("email/welcome.mjml").render_email({"user": user}, request, to=[user.email]).send()
 ```
 
-`render_email(context, request=None, *, subject="", **kwargs)` returns an *unsent*
-`EmailMultiAlternatives` with both bodies attached, so you can still `attach()` a file
-first. `kwargs` go straight to `EmailMultiAlternatives`: `to`, `from_email`, `bcc`,
-`reply_to`, `headers`, and so on.
-
-`render_email_parts(context, request=None, *, subject="")` gives the raw
-`(subject, text, html)` named tuple instead. Both methods exist on `.mjml` templates only.
-The subject is the one you pass, else the rendered `<mj-title>`, else a `ValueError`.
+`render_email(context, request=None, *, subject="", **kwargs)` returns an unsent
+`EmailMultiAlternatives` (so you can still `attach()`); `kwargs` go to it (`to`, `from_email`,
+`bcc`, ...). `render_email_parts(...)` returns the raw `(subject, text, html)` instead.
 
 ## Absolute URLs
 
-A relative link is dead in an email — there is no page for the mail client to resolve it
-against. So every `.mjml` render rewrites `href`, `src`, `background` and CSS `url()`
-against a base URL, and `{% url %}`, `{% static %}` and hand-written paths all come out
-absolute. Anything already carrying a scheme, a protocol-relative `//host/…` or a bare
-`#fragment` is left alone.
-
-The base comes from the request if you pass one, and otherwise from `MJML_BASE_URL`:
+Relative links are dead in an email, so `href`, `src`, `background` and CSS `url()` are made
+absolute against the request, or `MJML_BASE_URL`:
 
 ```python
-MJML_BASE_URL = "https://example.com"   # a full URL, used as-is
-MJML_BASE_URL = "https://"              # scheme only (the default) — paired with the current Site
+MJML_BASE_URL = "https://example.com"
 ```
 
-The default means projects with `django.contrib.sites` installed need no setting at all.
-With no request, no full URL and no sites app there is no base to work from, and URLs are
-left relative rather than raising — so sending from a Celery task or a management
-command wants one of the two. (A `MJML_BASE_URL` with no scheme at all is an
-`ImproperlyConfigured`.)
-
-The rewrite only reaches URLs in markup. Where a template writes one out as text, and in
-the `.txt` sibling where there is no markup at all, use `mjml_base`:
-
-```
-{# email/welcome.txt #}
-Sign up: {{ mjml_base }}{% url "signup" %}
-```
-
-Pass your own `mjml_base` in the context and it wins over the derived one.
+Projects with `django.contrib.sites` need no setting. With no request, setting or sites app,
+URLs are left relative (so set it for Celery tasks and management commands). Where markup
+doesn't reach, such as the `.txt` sibling, write `{{ mjml_base }}{% url "signup" %}`.
 
 ## Previewing
 
-`preview_response` shows an email the way a person meets it: an inbox row, the HTML part and the
-plain-text part, all read from the message itself. Nothing is wired up for you; your view builds
-the message, checks who may see it, and returns the response.
+`preview_response(message)` shows an email as a person meets it: an inbox row, the HTML and
+the plain text. Your own view builds the message and decides who may see it:
 
 ```python
 from mjml_templates.preview import preview_response
 
 @staff_member_required
 def welcome_preview(request):
-    message = get_template("email/welcome.mjml").render_email({"user": request.user}, request, to=[request.user.email])
+    message = get_template("email/welcome.mjml").render_email({"user": request.user}, request)
     return preview_response(message)
 ```
 
-To embed it in a page of your own, `preview_fragment(message)` returns the same preview as
-scoped markup. Tabs, the placeholder inbox, links, attachments, restyling with `--mjml-*` custom properties
-and overriding the templates are covered in [the preview docs](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/preview.md).
+`preview_fragment(message)` returns the same preview as markup to embed in a page of your own.
+Options, styling and overriding are in [the preview docs](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/preview.md).
