@@ -41,20 +41,23 @@ class EmailParts(NamedTuple):
 
 class MJMLTemplate(Template):
     def render(self, context=None, request=None) -> str:
-        base = base_url(request)
+        return self._render(context, request, base_url(request))
+
+    def _render(self, context, request, base: str) -> str:
         rendered = mjml2html(super().render(_with_base(context, base), request), disable_comments=True)
         return absolutise(rendered, base)
 
     def render_email_parts(self, context=None, request=None, *, subject: str = "") -> EmailParts:
         context = context or {}
-        rendered = self.render(context, request)
+        base = base_url(request)
+        rendered = self._render(context, request, base)
         name = self.template.name or "<string>"
         if not subject:
             match = re.search(r"<title>(.*?)</title>", rendered, re.S)
             subject = html.unescape(match.group(1)).strip() if match else ""
         if not subject:
             raise ValueError(f"{name}: no subject given and no <mj-title> in the template")
-        return EmailParts(subject, self._text(name, context, request, rendered), rendered)
+        return EmailParts(subject, self._text(name, context, request, base, rendered), rendered)
 
     def render_email(self, context=None, request=None, *, subject: str = "", **kwargs) -> EmailMultiAlternatives:
         """The message, unsent, so a caller can still attach to it. ``kwargs`` go to
@@ -65,10 +68,10 @@ class MJMLTemplate(Template):
         return msg
 
     @staticmethod
-    def _text(name: str, context, request, rendered: str) -> str:
+    def _text(name: str, context, request, base: str, rendered: str) -> str:
         if name.endswith(".mjml"):
             try:
-                context = _with_base(context, base_url(request))
+                context = _with_base(context, base)
                 return get_template(name[: -len(".mjml")] + ".txt").render(context, request)
             except TemplateDoesNotExist:
                 pass
