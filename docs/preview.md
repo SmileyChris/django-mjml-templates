@@ -1,5 +1,7 @@
 # Previewing an email
 
+![The HTML tab of a preview: the envelope, the tabs and the email](images/preview-html.png)
+
 `preview_response` renders a page that shows an email the way a person would meet it: a row in
 an inbox, the HTML part, and the plain-text part. It reads everything from the Django message
 you give it, so what you see is what `.send()` would send.
@@ -38,6 +40,8 @@ It works for any Django `EmailMessage` or `EmailMultiAlternatives`, not only one
 - **Text:** the plain-text part.
 
 The tabs are always in that order (Inbox, HTML, Text), minus any the message has nothing for.
+
+![The Inbox tab: the message as the first row of a mock inbox, with placeholder rows blurred beneath it](images/preview-inbox.png)
 
 ## Arguments
 
