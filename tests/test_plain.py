@@ -91,3 +91,8 @@ def test_escaped_characters_in_a_button_or_text_come_out_plain():
 )
 def test_a_line_that_looks_like_a_markdown_list_is_not_escaped(line, expected):
     assert to_text(f"<p>{line}</p>") == expected + "\n"
+
+
+def test_headings_are_underlined_for_h1_and_h2_and_plain_below():
+    text = to_text("<h1>Your <em>invoice</em></h1><h2>Payment</h2><h3>Notes</h3><p>Body</p>")
+    assert text == "Your invoice\n============\n\nPayment\n-------\n\nNotes\n\nBody\n"

@@ -51,6 +51,9 @@ def _unwrap(rendered: str) -> str:
     return "".join(parser.out)
 
 
+_HEADINGS = {f"h{n}" for n in range(1, 7)}
+
+
 class _Unwrap(HTMLParser):
     """Rewrites layout tables as ``<div>``s, leaving any other table whole. The open tables
     are a stack, so a cell's tags go or stay with the table they belong to."""
@@ -63,12 +66,18 @@ class _Unwrap(HTMLParser):
         self.button = None  # a link's href while its label is read (a button's, or an inline one's)
         self.is_button = False
         self.label = []
+        self.heading = None  # (tag, words) while a heading is read
 
     def _in_layout(self) -> bool:
         return bool(self.tables) and self.tables[-1]
 
     def handle_starttag(self, tag, attrs):
         at_cell_start, self.cell_start = self.cell_start, False
+        if self.heading is not None:
+            return
+        if tag in _HEADINGS and self.button is None:
+            self.heading = (tag, [])
+            return
         if self.button is not None:
             return  # a tag inside a link's label: the words are enough
         if tag == "a":
@@ -88,11 +97,18 @@ class _Unwrap(HTMLParser):
 
     def handle_startendtag(self, tag, attrs):
         self.cell_start = False
-        if self.button is None:
+        if self.button is None and self.heading is None:
             self.out.append(self.get_starttag_text())
 
     def handle_endtag(self, tag):
         self.cell_start = False
+        if self.heading is not None:
+            if tag == self.heading[0]:
+                words = " ".join(html.unescape("".join(self.heading[1])).split())
+                line = {"h1": "=", "h2": "-"}.get(tag)
+                self.out.append(f"<p>{html.escape(words)}{'<br>' + line * len(words) if line else ''}</p>")
+                self.heading = None
+            return
         if self.button is not None:
             if tag == "a":
                 label = " ".join("".join(self.label).split())
@@ -114,7 +130,10 @@ class _Unwrap(HTMLParser):
     def handle_data(self, data):
         if data.strip():
             self.cell_start = False
-        (self.label if self.button is not None else self.out).append(data)
+        if self.heading is not None:
+            self.heading[1].append(data)
+        else:
+            (self.label if self.button is not None else self.out).append(data)
 
     def handle_entityref(self, name):
         self.handle_data(f"&{name};" if self.button is None else html.unescape(f"&{name};"))
