@@ -96,3 +96,12 @@ def test_a_line_that_looks_like_a_markdown_list_is_not_escaped(line, expected):
 def test_headings_are_underlined_for_h1_and_h2_and_plain_below():
     text = to_text("<h1>Your <em>invoice</em></h1><h2>Payment</h2><h3>Notes</h3><p>Body</p>")
     assert text == "Your invoice\n============\n\nPayment\n-------\n\nNotes\n\nBody\n"
+
+
+def test_the_two_shallowest_heading_levels_used_are_the_ones_underlined():
+    text = to_text("<h2>Invoice</h2><h3>Payment</h3><h4>Notes</h4><p>Body</p>")
+    assert text == "Invoice\n=======\n\nPayment\n-------\n\nNotes\n\nBody\n"
+
+
+def test_a_lone_heading_level_is_underlined_whatever_it_is():
+    assert to_text("<h3>Thanks</h3><p>Body</p>") == "Thanks\n======\n\nBody\n"

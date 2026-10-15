@@ -45,7 +45,10 @@ def _link_text(label: str, url: str) -> str:
 
 
 def _unwrap(rendered: str) -> str:
-    parser = _Unwrap()
+    # The two shallowest heading levels the email uses are underlined (= then -), whichever they
+    # are: an email whose headings start at <h2> is not left with no hierarchy at all.
+    levels = sorted(set(re.findall(r"<h([1-6])\b", rendered)))[:2]
+    parser = _Unwrap({f"h{n}": mark for n, mark in zip(levels, "=-")})
     parser.feed(rendered)
     parser.close()
     return "".join(parser.out)
@@ -58,8 +61,9 @@ class _Unwrap(HTMLParser):
     """Rewrites layout tables as ``<div>``s, leaving any other table whole. The open tables
     are a stack, so a cell's tags go or stay with the table they belong to."""
 
-    def __init__(self):
+    def __init__(self, underlines: dict[str, str]):
         super().__init__(convert_charrefs=False)
+        self.underlines = underlines  # heading tag -> its underline character
         self.out = []
         self.tables = []  # per open table: True for a layout one
         self.cell_start = False  # a layout cell has just opened, nothing in it yet
@@ -105,7 +109,7 @@ class _Unwrap(HTMLParser):
         if self.heading is not None:
             if tag == self.heading[0]:
                 words = " ".join(html.unescape("".join(self.heading[1])).split())
-                line = {"h1": "=", "h2": "-"}.get(tag)
+                line = self.underlines.get(tag)
                 self.out.append(f"<p>{html.escape(words)}{'<br>' + line * len(words) if line else ''}</p>")
                 self.heading = None
             return

@@ -11,8 +11,9 @@
   `href` is just the label.
 - Plain-text fallback: a line that looks like a Markdown list item (`1. First`, `- Dash`)
   is no longer backslash-escaped.
-- Plain-text fallback: `<h1>` and `<h2>` are underlined with `=` and `-`, rather than
-  prefixed with `#` and `##`; `<h3>` to `<h6>` are plain lines.
+- Plain-text fallback: headings are underlined rather than prefixed with `#`: the two
+  shallowest levels an email uses get `=` then `-` (so an email that starts at `<h2>` still
+  has a hierarchy), and any deeper heading is a plain line.
 
 ## 1.2.0 (2026-09-24)
 
