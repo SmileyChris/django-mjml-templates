@@ -17,7 +17,21 @@ def test_layout_tables_leave_no_markdown_table_behind():
 
 def test_a_real_table_is_still_a_table():
     text = _text("<mj-table><tr><th>Item</th><th>Amount</th></tr><tr><td>Hosting</td><td>$50.00</td></tr></mj-table>")
-    assert "Item| Amount\n---|---\nHosting| $50.00" in text
+    assert text == "| Item    | Amount |\n|---------|--------|\n| Hosting | $50.00 |\n"
+
+
+def test_a_tables_columns_line_up_whatever_the_cell_widths():
+    text = _text(
+        "<mj-table><tr><th>Item</th><th>Amount</th></tr>"
+        "<tr><td>Extra seats x2</td><td>$30.00</td></tr><tr><td>Pro</td><td>$99.00</td></tr></mj-table>"
+    )
+    widths = {len(line) for line in text.splitlines()}
+    assert len(widths) == 1, text  # every row is the same width, so the pipes align
+
+
+def test_bold_and_italic_are_plain_words_not_markdown():
+    text = _text("<mj-text>Receipt <strong>#10482</strong>, <em>paid</em> and <b>filed</b>.</mj-text>")
+    assert text == "Receipt #10482, paid and filed.\n"
 
 
 def test_a_button_is_its_label_and_url():

@@ -25,6 +25,8 @@ def to_text(rendered: str) -> str:
     converter = html2text.HTML2Text()
     converter.body_width = 0
     converter.ignore_images = True
+    converter.ignore_emphasis = True  # no **bold** or _italic_: this is plain text, not Markdown
+    converter.pad_tables = True  # a real table lines up its columns, for a text client
     text = converter.handle(_unwrap(rendered))
     # html2text ends lines with two spaces for a Markdown hard break: noise in plain text.
     return "\n".join(_LIST_ESCAPE.sub(r"\1\2", line.rstrip()) for line in text.splitlines()).strip("\n") + "\n"
