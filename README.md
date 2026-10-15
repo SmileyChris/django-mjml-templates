@@ -98,3 +98,22 @@ Sign up: {{ mjml_base }}{% url "signup" %}
 ```
 
 Pass your own `mjml_base` in the context and it wins over the derived one.
+
+## Previewing
+
+`preview_response` shows an email the way a person meets it: an inbox row, the HTML part and the
+plain-text part, all read from the message itself. Nothing is wired up for you; your view builds
+the message, checks who may see it, and returns the response.
+
+```python
+from mjml_templates.preview import preview_response
+
+@staff_member_required
+def welcome_preview(request):
+    message = get_template("email/welcome.mjml").render_email({"user": request.user}, request, to=[request.user.email])
+    return preview_response(message)
+```
+
+To embed it in a page of your own, `preview_fragment(message)` returns the same preview as
+scoped markup. Tabs, the placeholder inbox, links, attachments, restyling with `--mjml-*` custom properties
+and overriding the templates are covered in [the preview docs](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/preview.md).

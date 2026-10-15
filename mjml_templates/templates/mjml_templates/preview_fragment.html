@@ -1,0 +1,93 @@
+<div class="mjml-preview" id="{{ uid }}">
+<style>
+  /* Everything is under .mjml-preview, with its own mp- class names, so a host page's CSS neither
+     leaks in nor is leaked into. The --mjml-* properties are the public ones: set them on any
+     ancestor (or with css=); the --_* ones are the values this fragment actually uses. */
+  .mjml-preview {
+    --_font: var(--mjml-font, system-ui, sans-serif);
+    --_text: var(--mjml-text, #1f2933);
+    --_muted: var(--mjml-muted, #6b7280); --_card: var(--mjml-card, #fff);
+    --_border: var(--mjml-border, #d9dce1); --_accent: var(--mjml-accent, #2563eb);
+        --_radius: var(--mjml-radius, .5rem);
+    font: 15px/1.5 var(--_font); color: var(--_text); text-align: left;
+  }
+  .mjml-preview, .mjml-preview * { box-sizing: border-box; }
+  /* A reset for the markup in here, in the base layer: a host's utility classes (Tailwind's are in a
+     layer of their own) must beat it, which an unlayered reset would not let them. */
+  @layer base {
+    .mjml-preview :where(div, dl, dt, dd, ul, li, pre, label, span, b, i, em, small, strong, time) {
+      margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit;
+      text-transform: none; letter-spacing: normal; text-decoration: none; list-style: none;
+    }
+  }
+  .mjml-preview .mp-card { background: var(--_card); border: 1px solid var(--_border); border-radius: var(--_radius); overflow: hidden; }
+  .mjml-preview .mp-subject { font-weight: 600; font-size: 1.05rem; padding: 1rem 1.25rem 0; }
+  .mjml-preview .mp-meta { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .15rem .75rem; padding: 1rem 1.25rem; }
+  .mjml-preview .mp-meta dt { color: var(--_muted); }
+  .mjml-preview .mp-meta dd { word-break: break-all; }
+  .mjml-preview .mp-chips { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0 1.25rem 1rem; }
+  .mjml-preview .mp-chips a, .mjml-preview .mp-chips span { border: 1px solid var(--_border); border-radius: 1rem; padding: .15rem .65rem; color: var(--_text); font-size: .85rem; }
+  /* The envelope: closed by default on the Inbox tab, whose row already says who, what and when. */
+  .mjml-preview .mp-envelope { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .2s ease; }
+  .mjml-preview .mp-envelope-body { overflow: hidden; min-height: 0; box-shadow: inset 0 -1px 0 var(--_border); }
+  .mjml-preview .mp-card:has(input[data-tab=inbox]:checked) .mp-envelope { grid-template-rows: 0fr; }
+  @media (prefers-reduced-motion: reduce) { .mjml-preview .mp-envelope { transition: none; } }
+  .mjml-preview .mp-tabs { position: relative; }
+  .mjml-preview .mp-tabs input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+  .mjml-preview .mp-bar { display: flex; flex-wrap: wrap; align-items: center; }
+  .mjml-preview .mp-bar > label { display: inline-block; padding: .6rem 1rem; cursor: pointer; user-select: none; border-bottom: 2px solid transparent; color: var(--_muted); }
+  .mjml-preview .mp-tabs.mp-single .mp-bar > label { display: none; }
+  .mjml-preview .mp-tabs input[data-tab=inbox]:checked ~ .mp-bar > label[data-tab=inbox],
+  .mjml-preview .mp-tabs input[data-tab=html]:checked ~ .mp-bar > label[data-tab=html],
+  .mjml-preview .mp-tabs input[data-tab=text]:checked ~ .mp-bar > label[data-tab=text] { color: var(--_text); border-bottom-color: var(--_accent); }
+  .mjml-preview .mp-tabs input[data-tab=inbox]:focus-visible ~ .mp-bar > label[data-tab=inbox],
+  .mjml-preview .mp-tabs input[data-tab=html]:focus-visible ~ .mp-bar > label[data-tab=html],
+  .mjml-preview .mp-tabs input[data-tab=text]:focus-visible ~ .mp-bar > label[data-tab=text] { outline: 2px solid var(--_accent); outline-offset: -2px; }
+  .mjml-preview .mp-panel { display: none; border-top: 1px solid var(--_border); }
+  .mjml-preview input[data-tab=html]:checked ~ .mp-p-html,
+  .mjml-preview input[data-tab=text]:checked ~ .mp-p-text,
+  .mjml-preview input[data-tab=inbox]:checked ~ .mp-p-inbox { display: block; }
+  .mjml-preview iframe { display: block; width: 100%; height: 34rem; border: 0; background: #fff; }
+  .mjml-preview pre { height: 34rem; padding: 1rem 1.25rem; overflow: auto; white-space: pre-wrap; font: .8rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .mjml-preview pre a, .mjml-preview pre a:visited { color: var(--_accent); text-decoration: underline; }
+  /* The inbox is a mock of a mail client, so it keeps its own light look in either scheme. */
+  .mjml-preview .mp-p-inbox { background: #e3e8ef; padding: 2rem 1rem; min-height: 12rem; }
+  .mjml-preview .mp-row { display: flex; flex-wrap: wrap; gap: .75rem; background: #fff; border-radius: 1rem 1rem 0 0; padding: .5rem .85rem; font: 14px/1.5 Roboto, Arial, sans-serif; color: #202124; }
+  .mjml-preview label.mp-row { cursor: pointer; }
+  .mjml-preview label.mp-row:hover { box-shadow: 0 1px 3px rgba(60, 64, 67, .3); position: relative; }
+  .mjml-preview .mp-row + .mp-row { border-top: 1px solid #f1f3f4; border-radius: 0; }
+  .mjml-preview .mp-row:last-child { border-radius: 0 0 1rem 1rem; }
+  .mjml-preview .mp-row:only-child { border-radius: 1rem; }
+  .mjml-preview .mp-blur .mp-older { filter: blur(3px); user-select: none; pointer-events: none; }
+  .mjml-preview .mp-older { background: #f2f6fc; }
+  .mjml-preview .mp-who { flex: none; width: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+  .mjml-preview .mp-line { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mjml-preview .mp-line strong { font-weight: 700; }
+  .mjml-preview .mp-line i { font-style: normal; color: #5f6368; }
+  .mjml-preview .mp-older .mp-who, .mjml-preview .mp-older .mp-line strong { font-weight: 400; }
+  .mjml-preview .mp-when { flex: none; font-size: .75rem; color: #5f6368; }
+  .mjml-preview .mp-atts { display: flex; flex-basis: 100%; gap: .5rem; padding-left: 8.75rem; font-size: 13px; }
+  .mjml-preview .mp-atts em { font-style: normal; border: 1px solid #dadce0; border-radius: 1rem; padding: .1rem .6rem; color: #3c4043; }
+  .mjml-preview .mp-aside { margin-left: auto; padding: .6rem 1rem; color: var(--_muted); font-size: .85rem; }
+</style>
+{% block style %}{% endblock %}
+{% if css %}<style>{{ css|safe }}</style>{% endif %}
+<div class="mp-card">
+  <div class="mp-envelope"><div class="mp-envelope-body">{% block envelope %}
+    <div class="mp-subject">{{ subject }}</div>
+    <dl class="mp-meta">
+      <dt>From</dt><dd>{{ from_email }}</dd>
+      <dt>To</dt><dd>{{ to|join:", " }}</dd>
+      {% if bcc %}<dt>Bcc</dt><dd>{{ bcc|join:", " }}</dd>{% endif %}
+    </dl>
+    {% if attachments %}<ul class="mp-chips">{% for name, mimetype, size, url in attachments %}<li>{% if url %}<a href="{{ url }}" target="_blank" rel="noopener" title="{{ mimetype }}">{{ name }} · {{ size }}</a>{% else %}<span title="{{ mimetype }}">{{ name }} · {{ size }}</span>{% endif %}</li>{% endfor %}</ul>{% endif %}
+  {% endblock %}</div></div>
+  <div class="mp-tabs{% if not bar %} mp-single{% endif %}">
+    {% for tab in tabs %}<input type="radio" name="{{ uid }}-view" id="{{ uid }}-{{ tab }}" data-tab="{{ tab }}"{% if tab == opened %} checked{% endif %}>{% endfor %}
+    <div class="mp-bar">{% for tab in tabs %}<label for="{{ uid }}-{{ tab }}" data-tab="{{ tab }}">{% block tab_label %}{% if tab == 'html' %}HTML{% else %}{{ tab|capfirst }}{% endif %}{% endblock %}</label>{% endfor %}{% block tab_aside %}{% endblock %}</div>
+    {% if "html" in tabs %}<div class="mp-panel mp-p-html">{% block panel_html %}<iframe sandbox="{{ sandbox }}" title="HTML part of the email" srcdoc="{{ html|force_escape }}"></iframe>{% endblock %}</div>{% endif %}
+    {% if "text" in tabs %}<div class="mp-panel mp-p-text">{% block panel_text %}<pre>{{ text }}</pre>{% endblock %}</div>{% endif %}
+    {% if "inbox" in tabs %}<div class="mp-panel mp-p-inbox{% if blur %} mp-blur{% endif %}">{% block inbox_row %}{% if open_tab %}<label class="mp-row" for="{{ uid }}-{{ open_tab }}">{% else %}<div class="mp-row">{% endif %}<b class="mp-who">{{ from_name }}</b><span class="mp-line"><strong>{{ subject }}</strong><i> - {{ snippet }}</i></span><time class="mp-when">{% now "g:i A" %}</time>{% if attachments %}<small class="mp-atts">{% for name, mimetype, size, url in attachments %}<em title="{{ mimetype }}">{{ name }} · {{ size }}</em>{% endfor %}</small>{% endif %}{% if open_tab %}</label>{% else %}</div>{% endif %}{% endblock %}{% block inbox_others %}{% for sender, subj, snip, when in inbox %}<div class="mp-row mp-older"><b class="mp-who">{{ sender }}</b><span class="mp-line"><strong>{{ subj }}</strong><i> - {{ snip }}</i></span><time class="mp-when">{{ when }}</time></div>{% endfor %}{% endblock %}</div>{% endif %}
+  </div>
+</div>
+</div>

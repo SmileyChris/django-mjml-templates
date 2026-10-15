@@ -15,6 +15,12 @@
 - Plain-text fallback: headings are underlined rather than prefixed with `#`: the two
   shallowest levels an email uses get `=` then `-` (so an email that starts at `<h2>` still
   has a hierarchy), and any deeper heading is a plain line.
+- `mjml_templates.preview`: `preview_fragment(message, ...)` and `preview_response(message, ...)`
+  show a built email the way a person meets it -- an inbox row, the HTML part and the
+  plain-text part -- read from the Django message itself. The fragment is scoped markup to
+  embed in a page of your own, with blocks to extend and `--mjml-*` custom properties; the
+  response wraps it in a page. Links are dead and scripts are off. Nothing is wired up and
+  nothing is imported unless you use it: see `docs/preview.md`.
 
 ## 1.2.0 (2026-09-24)
 

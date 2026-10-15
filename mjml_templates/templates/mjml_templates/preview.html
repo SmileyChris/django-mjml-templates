@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Preview: {{ heading|default:subject }}</title>
+<style>
+  body { margin: 0; font: 15px/1.5 var(--mjml-font, system-ui, sans-serif); color: var(--mjml-text, #1f2933); background: var(--mjml-bg, #f3f4f6); }
+  main { max-width: 52rem; margin: 0 auto; padding: 1.5rem 1rem; }
+  h1 { font-size: 1.25rem; margin: 0 0 .75rem; }
+  /* Dark is the page's to choose, since it owns the background: the fragment only reads these
+     properties, so a host page that is not dark is never turned light-on-light by the OS setting. */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --mjml-text: #e5e7eb; --mjml-muted: #9ca3af; --mjml-card: #1f2937;
+      --mjml-border: #374151;
+    }
+    body { background: var(--mjml-bg, #111827); }
+  }
+</style>
+{% block head %}{% endblock %}
+</head>
+<body>
+<main>
+{% block content %}
+  {% if heading %}<h1>{{ heading }}</h1>{% endif %}
+  {{ fragment }}
+{% endblock %}
+</main>
+</body>
+</html>
