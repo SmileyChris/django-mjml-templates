@@ -8,12 +8,17 @@ becomes ``Label: url`` on a line of its own, rather than ``[Label](url)``.
 """
 
 import html
+import re
 from html.parser import HTMLParser
 
 import html2text
 
 _ROWS = {"tr", "td", "th"}
 _LAYOUT = _ROWS | {"table", "thead", "tbody", "tfoot"}
+
+# html2text backslash-escapes a line that could read as a Markdown list item ("1\. ", "\- ",
+# "\+ "). This is not Markdown, so the backslash is noise.
+_LIST_ESCAPE = re.compile(r"^(\s*)(?:(\d+)\\(?=\.)|\\(?=[-+]))")
 
 
 def to_text(rendered: str) -> str:
@@ -22,7 +27,7 @@ def to_text(rendered: str) -> str:
     converter.ignore_images = True
     text = converter.handle(_unwrap(rendered))
     # html2text ends lines with two spaces for a Markdown hard break: noise in plain text.
-    return "\n".join(line.rstrip() for line in text.splitlines()).strip("\n") + "\n"
+    return "\n".join(_LIST_ESCAPE.sub(r"\1\2", line.rstrip()) for line in text.splitlines()).strip("\n") + "\n"
 
 
 def _unwrap(rendered: str) -> str:

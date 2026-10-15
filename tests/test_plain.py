@@ -1,5 +1,6 @@
 """The plain-text fallback: MJML's layout tables unwrapped, real tables kept, buttons as Label: url."""
 
+import pytest
 from mjml import mjml2html
 
 from mjml_templates.plain import to_text
@@ -41,3 +42,12 @@ def test_escaped_characters_in_a_button_or_text_come_out_plain():
         '<mj-button href="https://x.test/t">Ann&#x27;s terms &amp; conditions</mj-button>'
     )
     assert text == "Terms & conditions\n\nAnn's terms & conditions: https://x.test/t\n"
+
+
+@pytest.mark.parametrize(
+    ("line", "expected"),
+    [("1. First", "1. First"), ("12. Twelve", "12. Twelve"), ("- Dash", "- Dash"), ("+ Plus", "+ Plus")],
+)
+def test_a_line_that_looks_like_a_markdown_list_is_not_escaped(line, expected):
+    assert to_text(f"<p>{line}</p>") == expected + "\n"
+
