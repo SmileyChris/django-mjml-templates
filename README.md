@@ -8,7 +8,7 @@ part comes from [html2text](https://pypi.org/project/html2text/).
 ## Setup
 
 ```sh
-pip install django-mjml-templates
+uv add django-mjml-templates   # or pip install
 ```
 
 Swap the backend in `TEMPLATES`; everything else stays as it was:
@@ -20,8 +20,7 @@ TEMPLATES = [{
 }]
 ```
 
-Only templates ending in `.mjml` are treated as email; every other template renders as before,
-and the engine keeps its `django` name, so `engines["django"]` still works.
+Only templates ending in `.mjml` are treated as email; every other template renders as before.
 
 ## Writing an email
 
