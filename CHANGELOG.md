@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.0 (2026-10-16)
 
 - Plain-text fallback: `**bold**` and `*italic*` come out as plain words, and a real
   table's columns are padded so the pipes line up.
