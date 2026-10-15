@@ -71,17 +71,6 @@ doesn't reach, such as the `.txt` sibling, write `{{ mjml_base }}{% url "signup"
 
 ## Previewing
 
-`preview_response(message)` shows an email as a person meets it: an inbox row, the HTML and
-the plain text. Your own view builds the message and decides who may see it:
-
-```python
-from mjml_templates.preview import preview_response
-
-@staff_member_required
-def welcome_preview(request):
-    message = get_template("email/welcome.mjml").render_email({"user": request.user}, request)
-    return preview_response(message)
-```
-
-`preview_fragment(message)` returns the same preview as markup to embed in a page of your own.
-Options, styling and overriding are in [the preview docs](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/preview.md).
+`mjml_templates.preview` can show a built email as a person meets it (an inbox row, the HTML
+and the plain text), as a page or as markup to embed in your own. See
+[the preview docs](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/preview.md).
