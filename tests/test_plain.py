@@ -105,3 +105,8 @@ def test_the_two_shallowest_heading_levels_used_are_the_ones_underlined():
 
 def test_a_lone_heading_level_is_underlined_whatever_it_is():
     assert to_text("<h3>Thanks</h3><p>Body</p>") == "Thanks\n======\n\nBody\n"
+
+
+def test_a_heading_with_no_words_takes_no_level_and_prints_nothing():
+    text = to_text('<h1><img src="https://x.test/logo.png" alt=""></h1><h2>Invoice</h2><h3>Payment</h3>')
+    assert text == "Invoice\n=======\n\nPayment\n-------\n"

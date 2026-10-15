@@ -46,8 +46,9 @@ def _link_text(label: str, url: str) -> str:
 
 def _unwrap(rendered: str) -> str:
     # The two shallowest heading levels the email uses are underlined (= then -), whichever they
-    # are: an email whose headings start at <h2> is not left with no hierarchy at all.
-    levels = sorted(set(re.findall(r"<h([1-6])\b", rendered)))[:2]
+    # are: an email whose headings start at <h2> is not left with no hierarchy at all. A heading
+    # with no words (a logo in an <h1>) prints nothing, so it does not take a level.
+    levels = sorted({n for n, body in _HEADING.findall(rendered) if html.unescape(_TAGS.sub("", body)).strip()})[:2]
     parser = _Unwrap({f"h{n}": mark for n, mark in zip(levels, "=-")})
     parser.feed(rendered)
     parser.close()
@@ -55,6 +56,8 @@ def _unwrap(rendered: str) -> str:
 
 
 _HEADINGS = {f"h{n}" for n in range(1, 7)}
+_HEADING = re.compile(r"<h([1-6])\b[^>]*>(.*?)</h\1>", re.S)
+_TAGS = re.compile(r"<[^>]*>")
 
 
 class _Unwrap(HTMLParser):
@@ -110,7 +113,8 @@ class _Unwrap(HTMLParser):
             if tag == self.heading[0]:
                 words = " ".join(html.unescape("".join(self.heading[1])).split())
                 line = self.underlines.get(tag)
-                self.out.append(f"<p>{html.escape(words)}{'<br>' + line * len(words) if line else ''}</p>")
+                if words:
+                    self.out.append(f"<p>{html.escape(words)}{'<br>' + line * len(words) if line else ''}</p>")
                 self.heading = None
             return
         if self.button is not None:
