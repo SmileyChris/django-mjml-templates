@@ -39,9 +39,36 @@ def test_a_button_is_its_label_and_url():
     assert text == "View your invoice: https://x.test/i/1\n"
 
 
-def test_a_link_in_text_is_left_to_html2text():
-    text = _text('<mj-text>see <a href="https://x.test/">here</a></mj-text>')
-    assert text == "see [here](https://x.test/)\n"
+def test_an_inline_link_is_its_label_and_url_in_parens():
+    text = _text('<mj-text>see <a href="https://x.test/">here</a> for more</mj-text>')
+    assert text == "see here (https://x.test/) for more\n"
+
+
+def test_a_links_url_is_not_backslash_escaped():
+    text = _text('<mj-text><a href="https://x.test/a_(b)">docs [v2]</a></mj-text>')
+    assert text == "docs [v2] (https://x.test/a_(b))\n"
+
+
+def test_a_link_whose_label_is_its_address_is_just_the_address():
+    assert _text('<mj-text><a href="https://x.test/">https://x.test/</a></mj-text>') == "https://x.test/\n"
+    assert _text('<mj-text><a href="mailto:hi@x.test">hi@x.test</a></mj-text>') == "hi@x.test\n"
+    assert _text('<mj-text><a href="tel:+64211234567">+64211234567</a></mj-text>') == "+64211234567\n"
+
+
+def test_a_mailto_link_with_another_label_keeps_the_address():
+    text = _text('<mj-text><a href="mailto:hi@x.test">email us</a></mj-text>')
+    assert text == "email us (mailto:hi@x.test)\n"
+
+
+def test_a_link_with_no_label_or_no_destination_is_not_a_url_on_its_own():
+    assert _text('<mj-text>a<a href="https://x.test/"> </a>b</mj-text>') == "ab\n"
+    assert _text('<mj-text><a href="#top">back to top</a></mj-text>') == "back to top\n"
+    assert _text("<mj-text><a>no href</a></mj-text>") == "no href\n"
+
+
+def test_named_entities_keep_their_characters():
+    text = _text("<mj-text>caf&eacute; &copy; 2026 &mdash; M&amacr;ori &hellip;</mj-text>")
+    assert text == "café © 2026 — Māori …\n"
 
 
 def test_no_trailing_spaces():
@@ -64,4 +91,3 @@ def test_escaped_characters_in_a_button_or_text_come_out_plain():
 )
 def test_a_line_that_looks_like_a_markdown_list_is_not_escaped(line, expected):
     assert to_text(f"<p>{line}</p>") == expected + "\n"
-
