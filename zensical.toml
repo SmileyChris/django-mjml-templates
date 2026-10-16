@@ -6,6 +6,7 @@ repo_url = "https://github.com/SmileyChris/django-mjml-templates"
 nav = [
   { "Get started" = "README.md" },
   { "How-to" = [
+    { "Build a simple design" = "how-to/build-a-design.md" },
     { "Write a shared layout" = "how-to/write-a-layout.md" },
     { "Make links absolute" = "how-to/absolute-urls.md" },
     { "Preview an email" = "how-to/preview-an-email.md" },

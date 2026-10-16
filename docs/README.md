@@ -79,6 +79,7 @@ def invite_preview(request):
 
 **How-to**
 
+- [Build a simple design](how-to/build-a-design.md): a base template with the look, and emails that fill it
 - [Write a shared layout](how-to/write-a-layout.md): `{% extends %}`, the subject, a hand-written `.txt`
 - [Make links absolute](how-to/absolute-urls.md): tasks, commands and `MJML_BASE_URL`
 - [Preview an email](how-to/preview-an-email.md): a page, or a fragment in your own
