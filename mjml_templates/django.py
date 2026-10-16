@@ -13,6 +13,7 @@ and HTML. The subject comes from ``<mj-title>`` unless given; the text comes fro
 
 import html
 import re
+from pathlib import Path
 from typing import NamedTuple
 
 from django.core.mail import EmailMultiAlternatives
@@ -85,6 +86,12 @@ class DjangoTemplates(django_backend.DjangoTemplates):
     an engine's default ``NAME`` from the module segment of ``BACKEND``, so this one is
     still called "django" without anyone having to say so.
     """
+
+    def __init__(self, params):
+        super().__init__(params)
+        # Last, so a project's own templates win: lets an override ``{% extends %}`` the packaged
+        # preview templates without the package needing to be in INSTALLED_APPS.
+        self.engine.dirs.append(str(Path(__file__).parent / "templates"))
 
     def from_string(self, template_code):
         cls = MJMLTemplate if template_code.lstrip().startswith("<mjml") else Template

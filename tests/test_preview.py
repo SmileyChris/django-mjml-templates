@@ -3,7 +3,6 @@
 import re
 
 import pytest
-from django.conf import settings
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template import engines
 from django.test import override_settings
@@ -266,12 +265,12 @@ def test_a_project_template_of_the_same_name_replaces_the_page(tmp_path):
     assert page.startswith('PAGE <div class="mjml-preview"')
 
 
-def test_a_page_override_can_extend_the_packaged_page_once_the_app_is_installed(tmp_path):
+def test_a_page_override_can_extend_the_packaged_page(tmp_path):
     _write(
         tmp_path, "preview.html",
         '{% extends "mjml_templates/preview.html" %}{% block head %}<style>/*mine*/</style>{% endblock %}',
     )
-    with _templates(tmp_path, INSTALLED_APPS=[*settings.INSTALLED_APPS, "mjml_templates"]):
+    with _templates(tmp_path):
         page = preview_response(_message()).content.decode()
     assert "/*mine*/" in page and "<title>Preview: Mine</title>" in page
 
@@ -279,8 +278,8 @@ def test_a_page_override_can_extend_the_packaged_page_once_the_app_is_installed(
 def test_a_broken_override_is_an_error_not_a_silent_fallback(tmp_path):
     from django.template import TemplateDoesNotExist
 
-    _write(tmp_path, "preview.html", '{% extends "mjml_templates/preview.html" %}')
-    with _templates(tmp_path), pytest.raises(TemplateDoesNotExist):  # app not installed: nothing to extend
+    _write(tmp_path, "preview.html", '{% extends "mjml_templates/missing.html" %}')
+    with _templates(tmp_path), pytest.raises(TemplateDoesNotExist):
         preview_response(_message())
 
 
@@ -291,7 +290,7 @@ def test_your_own_template_fills_the_fragments_blocks_with_extra_context(tmp_pat
         "{% block inbox_others %}<i>OLDER</i>{% endblock %}"
         "{% block panel_text %}<pre>{{ message.subject }}</pre>{% endblock %}"
     )
-    with _templates(tmp_path, INSTALLED_APPS=[*settings.INSTALLED_APPS, "mjml_templates"]):
+    with _templates(tmp_path):
         out = preview_fragment(_message(), template="mine.html", context={"note": "Nothing is sent"})
     assert "<span>Nothing is sent / " in out and "<i>OLDER</i>" in out and "<pre>Mine</pre>" in out
     assert 'class="mp-row' in out and "mp-envelope" in out  # blocks left alone are the stock ones

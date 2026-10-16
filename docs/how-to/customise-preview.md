@@ -66,10 +66,8 @@ works however much you replace. Replacing `panel_html` is where you take respons
 frame's `sandbox`: the stock one has scripts off, so a message cannot run code, which is also
 what a mail client does. If you need scripts (a script of your own that talks to your page, say),
 write the `<iframe sandbox="allow-scripts …">` yourself here, and never add `allow-same-origin`
-alongside it. Extending needs `"mjml_templates"`
-in `INSTALLED_APPS` (below).
+alongside it.
 
-The packaged template is always the fallback, with nothing to install. To
-`{% extends "mjml_templates/preview.html" %}` instead of copying it, add `"mjml_templates"` to
-`INSTALLED_APPS` so your engine can find the parent. Without that, an extending override raises
-`TemplateDoesNotExist` rather than quietly showing the stock page.
+The packaged templates are always there as a fallback, and the backend lets your own templates
+`{% extends "mjml_templates/preview.html" %}` instead of copying it, with nothing to install or
+add to `INSTALLED_APPS`.

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- The backend adds the packaged templates as a last template directory, so a project's own
+  preview template can `{% extends "mjml_templates/preview_fragment.html" %}` without
+  `mjml_templates` in `INSTALLED_APPS`.
+
 ## 1.3.0 (2026-10-16)
 
 - Plain-text fallback: `**bold**` and `*italic*` come out as plain words, and a real
