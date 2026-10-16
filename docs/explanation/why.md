@@ -27,7 +27,7 @@ possible, and as little work per email as possible.**
 | Subject | Not covered | Taken from `<mj-title>` |
 | Plain-text body | Not covered | Sibling `.txt`, or an `html2text` fallback with layout tables unwrapped |
 | Absolute URLs | Not covered | Relative `href`/`src`/`url()` rewritten against the request or `MJML_BASE_URL` |
-| Preview | Not covered | [`preview_response`](preview.md), an inbox row plus the HTML and text parts |
+| Preview | Not covered | [`preview_response`](../reference/preview.md), an inbox row plus the HTML and text parts |
 | Fidelity to MJML | Reference implementation | `mrml` port, can lag official MJML on newer components |
 | Options | Minify, validation level, hosted API | None yet |
 

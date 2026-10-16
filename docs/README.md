@@ -75,11 +75,21 @@ def invite_preview(request):
     return preview_response(message)
 ```
 
-## More
+## Where next
 
-- [Writing an email](writing-emails.md): layouts with `{% extends %}`, the subject, the plain-text part
-- [Sending](sending.md): `render_email`, `render_email_parts` and what they return
-- [Absolute URLs](absolute-urls.md): how relative links are made absolute, and `MJML_BASE_URL`
-- [The plain-text fallback](plain-text.md): what the generated text looks like
-- [Previewing](preview.md): the preview page and the embeddable fragment
-- [Why this, and not django-mjml](why.md): how it differs, and when to pick which
+**How-to**
+
+- [Write a shared layout](how-to/write-a-layout.md): `{% extends %}`, the subject, a hand-written `.txt`
+- [Make links absolute](how-to/absolute-urls.md): tasks, commands and `MJML_BASE_URL`
+- [Preview an email](how-to/preview-an-email.md): a page, or a fragment in your own
+- [Customise the preview](how-to/customise-preview.md): colours, dark mode, markup
+
+**Reference**
+
+- [API](reference/api.md): `render_email`, `render_email_parts`, the subject, URL rules, settings
+- [The plain-text fallback](reference/plain-text.md): how each construct comes out as text
+- [Preview](reference/preview.md): arguments, tabs, properties, blocks, safety
+
+**Explanation**
+
+- [Why this, and not django-mjml](explanation/why.md)

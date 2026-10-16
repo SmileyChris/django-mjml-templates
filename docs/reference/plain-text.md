@@ -23,4 +23,4 @@ Lines are not wrapped (the mail client does that) and there are no trailing spac
 
 The fallback is good for transactional mail. Write a `.txt` when you want something a person
 would write by hand: a signature block, a short summary, different wording. See
-[Writing an email](writing-emails.md#the-plain-text-part).
+[Write the plain text by hand](../how-to/write-a-layout.md#write-the-plain-text-by-hand).

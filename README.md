@@ -71,9 +71,7 @@ doesn't reach, such as the `.txt` sibling, write `{{ mjml_base }}{% url "signup"
 
 ## Documentation
 
-- [Writing an email](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/writing-emails.md): layouts, the subject, the plain-text part
-- [Sending](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/sending.md)
-- [Absolute URLs](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/absolute-urls.md)
-- [The plain-text fallback](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/plain-text.md)
-- [Previewing an email](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/preview.md): an inbox row, the HTML and the text, as a page or an embeddable fragment
-- [Why this, and not django-mjml](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/why.md)
+- [Get started](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/README.md): the template, the view and a preview view
+- How-to: [a shared layout](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/how-to/write-a-layout.md), [absolute links](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/how-to/absolute-urls.md), [previewing](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/how-to/preview-an-email.md), [customising the preview](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/how-to/customise-preview.md)
+- Reference: [API](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/reference/api.md), [plain-text fallback](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/reference/plain-text.md), [preview](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/reference/preview.md)
+- [Why this, and not django-mjml](https://github.com/SmileyChris/django-mjml-templates/blob/main/docs/explanation/why.md)

@@ -4,13 +4,21 @@ site_description = "Email templates as .mjml files with the Django template lang
 site_url = "https://smileychris.github.io/django-mjml-templates/"
 repo_url = "https://github.com/SmileyChris/django-mjml-templates"
 nav = [
-  { "Home" = "README.md" },
-  { "Writing an email" = "writing-emails.md" },
-  { "Sending" = "sending.md" },
-  { "Absolute URLs" = "absolute-urls.md" },
-  { "Plain-text fallback" = "plain-text.md" },
-  { "Previewing" = "preview.md" },
-  { "Why this, and not django-mjml" = "why.md" },
+  { "Get started" = "README.md" },
+  { "How-to" = [
+    { "Write a shared layout" = "how-to/write-a-layout.md" },
+    { "Make links absolute" = "how-to/absolute-urls.md" },
+    { "Preview an email" = "how-to/preview-an-email.md" },
+    { "Customise the preview" = "how-to/customise-preview.md" },
+  ] },
+  { "Reference" = [
+    { "API" = "reference/api.md" },
+    { "Plain-text fallback" = "reference/plain-text.md" },
+    { "Preview" = "reference/preview.md" },
+  ] },
+  { "Explanation" = [
+    { "Why this, and not django-mjml" = "explanation/why.md" },
+  ] },
 ]
 
 [project.theme]
