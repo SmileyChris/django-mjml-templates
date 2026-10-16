@@ -1,0 +1,54 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "zensical.toml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.15"
+          python-version: "3.13"
+
+      - name: Build documentation
+        run: uv run --frozen zensical build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
