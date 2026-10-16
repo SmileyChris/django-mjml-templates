@@ -33,6 +33,21 @@ A Django template first (`{% extends %}`, `{% url %}`, autoescaping), then
 ```html
 {# templates/email/welcome.mjml #}
 <mjml>
+  <mj-head><mj-title>Welcome to Paperplane, {{ user.first_name }}</mj-title></mj-head>
+  <mj-body>
+    <mj-section><mj-column>
+      <mj-text>Hi {{ user.first_name }}, your account is ready.</mj-text>
+      <mj-button href="{% url 'start' %}">Get started</mj-button>
+    </mj-column></mj-section>
+  </mj-body>
+</mjml>
+```
+
+<details>
+<summary>The styled version in the screenshot below</summary>
+
+```html
+<mjml>
   <mj-head>
     <mj-title>Welcome to Paperplane, {{ user.first_name }}</mj-title>
     <mj-attributes><mj-all font-family="Helvetica, Arial, sans-serif" /></mj-attributes>
@@ -54,6 +69,8 @@ A Django template first (`{% extends %}`, `{% url %}`, autoescaping), then
 </mjml>
 ```
 
+</details>
+
 ## Send it
 
 ```python
@@ -68,7 +85,7 @@ from the MJML, and a plain-text part made for you. Attach files, set `reply_to`,
 Celery task like any other Django message. Links are made absolute from the request, or from
 `MJML_BASE_URL` when there isn't one.
 
-And the reader gets:
+With the styled template, the reader gets:
 
 ![The welcome email: an indigo header, a greeting, a button and a footer](https://smileychris.github.io/django-mjml-templates/images/welcome-email.png)
 
