@@ -1,9 +1,10 @@
 # django-mjml-templates
 
-**Email that's just another Django template.** Write `.mjml` files with `{% extends %}`,
-`{% url %}` and your own tags and filters, and get back a message ready to send: responsive HTML,
-a plain-text part, a subject and absolute links. No Node and no server to run: MJML is compiled
-in-process. Swap one line in `TEMPLATES` and everything else in your project renders as it did.
+**Email that's just another Django template.** [MJML](https://mjml.io/) is a markup that compiles
+to responsive email HTML. Write it in `.mjml` files with `{% extends %}`, `{% url %}` and your own
+tags and filters, and get back a message ready to send: the HTML, a plain-text part, a subject and
+absolute links, with no Node or server needed. Swap a line in `TEMPLATES` and everything else
+keeps rendering as normal.
 
 ## Setup
 
