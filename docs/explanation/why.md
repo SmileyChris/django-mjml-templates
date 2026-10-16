@@ -31,6 +31,23 @@ possible, and as little work per email as possible.**
 | Fidelity to MJML | Reference implementation | `mrml` port, can lag official MJML on newer components |
 | Options | Minify, validation level, hosted API | None yet |
 
+## Speed
+
+The default way to use django-mjml starts a Node process for every email, about 570 ms each.
+Running its TCP server instead removes that cost, and then the two are about the same speed:
+
+| One small email | ms |
+|---|---|
+| This package, full `render_email()` (also the subject, plain text and absolute URLs) | 1.5 |
+| django-mjml, TCP server already running | 1.7 to 2.1 |
+| django-mjml, default `cmd` mode (a Node process per email) | about 570 |
+
+So the advantage over a running server isn't speed, it's that there is no server: nothing to
+deploy, keep running, or have down when an email is sent.
+
+These are one small email on one machine, with a stand-in for django-mjml's TCP server (the
+official one isn't packaged). Run it yourself with `uv run benchmarks/compare.py`.
+
 ## Where this one is a better fit
 
 - **Deploys without Node.** A slim Python image, a serverless function, or a worker that has no

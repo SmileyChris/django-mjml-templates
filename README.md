@@ -1,9 +1,9 @@
 # django-mjml-templates
 
-Write email as `.mjml` templates with the Django template language, and send it from a normal
-view. A drop-in replacement for Django's template backend: no Node, no new template engine to
-learn. MJML is compiled by [mjml-python](https://pypi.org/project/mjml-python/) and the
-plain-text part comes from [html2text](https://pypi.org/project/html2text/).
+**Email that's just another Django template.** Write `.mjml` files with `{% extends %}`,
+`{% url %}` and your own tags and filters, and get back a message ready to send: responsive HTML,
+a plain-text part, a subject and absolute links. No Node and no server to run: MJML is compiled
+in-process. Swap one line in `TEMPLATES` and everything else in your project renders as it did.
 
 ## Setup
 
@@ -21,6 +21,8 @@ TEMPLATES = [{
 ```
 
 Only templates ending in `.mjml` are treated as email; every other template renders as before.
+MJML is compiled by [mjml-python](https://pypi.org/project/mjml-python/) and the plain-text part
+comes from [html2text](https://pypi.org/project/html2text/).
 
 ## Write an email
 
