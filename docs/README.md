@@ -75,6 +75,8 @@ def invite_preview(request):
     return preview_response(message)
 ```
 
+![The preview page: the envelope, the tabs and the email](images/preview-html.png){ width=480 }
+
 ## Where next
 
 **How-to**
