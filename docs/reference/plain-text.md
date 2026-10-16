@@ -19,8 +19,12 @@ Markdown.
 
 Lines are not wrapped (the mail client does that) and there are no trailing spaces.
 
-## When to write your own
+## Generated or hand-written
 
-The fallback is good for transactional mail. Write a `.txt` when you want something a person
+The fallback is built for transactional mail, so it reads as an email: no Markdown markers, tables
+that line up, links that keep their address. It is a translation of the HTML, so it can only say
+what the HTML says.
+
+Write a `.txt` when you want something a person
 would write by hand: a signature block, a short summary, different wording. See
 [Write the plain text by hand](../how-to/write-a-layout.md#write-the-plain-text-by-hand).

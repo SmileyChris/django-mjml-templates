@@ -18,6 +18,8 @@ nav = [
   ] },
   { "Explanation" = [
     { "Why this" = "explanation/why.md" },
+    { "How a render works" = "explanation/how-a-render-works.md" },
+    { "How the preview is designed" = "explanation/preview-design.md" },
   ] },
 ]
 

@@ -93,3 +93,5 @@ def invite_preview(request):
 **Explanation**
 
 - [Why this](explanation/why.md)
+- [How a render works](explanation/how-a-render-works.md): the steps, and what their order means
+- [How the preview is designed](explanation/preview-design.md): why it is a function, and the safety choices
