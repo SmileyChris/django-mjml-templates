@@ -81,6 +81,8 @@ def invite_preview(request):
 
 - [Build a simple design](how-to/build-a-design.md): a base template with the look, and emails that fill it
 - [Write a shared layout](how-to/write-a-layout.md): `{% extends %}`, the subject, a hand-written `.txt`
+- [Send from a task or command](how-to/send-from-a-task.md): Celery, attachments, one email per recipient
+- [Test an email](how-to/test-an-email.md): `mail.outbox` and `render_email_parts`
 - [Make links absolute](how-to/absolute-urls.md): tasks, commands and `MJML_BASE_URL`
 - [Preview an email](how-to/preview-an-email.md): a page, or a fragment in your own
 - [Customise the preview](how-to/customise-preview.md): colours, dark mode, markup
