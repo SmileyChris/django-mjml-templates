@@ -5,12 +5,12 @@ site_url = "https://smileychris.github.io/django-mjml-templates/"
 repo_url = "https://github.com/SmileyChris/django-mjml-templates"
 nav = [
   { "Home" = "README.md" },
-  { "Why this" = "why.md" },
   { "Writing an email" = "writing-emails.md" },
   { "Sending" = "sending.md" },
   { "Absolute URLs" = "absolute-urls.md" },
   { "Plain-text fallback" = "plain-text.md" },
   { "Previewing" = "preview.md" },
+  { "Why this, and not django-mjml" = "why.md" },
 ]
 
 [project.theme]
