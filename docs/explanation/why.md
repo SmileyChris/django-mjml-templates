@@ -1,4 +1,4 @@
-# Why this package
+# Why this
 
 There is already a well-known MJML package for Django, [django-mjml](https://pypi.org/project/django-mjml/),
 and it is a good one. This package exists for a different aim: **as few moving parts as

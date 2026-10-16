@@ -17,7 +17,7 @@ nav = [
     { "Preview" = "reference/preview.md" },
   ] },
   { "Explanation" = [
-    { "Why this, and not django-mjml" = "explanation/why.md" },
+    { "Why this" = "explanation/why.md" },
   ] },
 ]
 

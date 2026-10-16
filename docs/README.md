@@ -92,4 +92,4 @@ def invite_preview(request):
 
 **Explanation**
 
-- [Why this, and not django-mjml](explanation/why.md)
+- [Why this](explanation/why.md)
