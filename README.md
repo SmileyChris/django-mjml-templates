@@ -12,7 +12,7 @@ keeps rendering as normal.
 uv add django-mjml-templates   # or pip install
 ```
 
-Swap the backend in `TEMPLATES`; everything else stays as it was:
+Swap the backend:
 
 ```python
 TEMPLATES = [{
@@ -35,30 +35,19 @@ A Django template first (`{% extends %}`, `{% url %}`, autoescaping), then
 <mjml>
   <mj-head>
     <mj-title>Welcome to Paperplane, {{ user.first_name }}</mj-title>
-    <mj-preview>Your account is ready.</mj-preview>
-    <mj-attributes>
-      <mj-all font-family="Helvetica, Arial, sans-serif" />
-      <mj-text font-size="16px" line-height="1.6" color="#374151" />
-      <mj-button background-color="#4f46e5" border-radius="8px" font-size="16px" font-weight="600" />
-    </mj-attributes>
+    <mj-attributes><mj-all font-family="Helvetica, Arial, sans-serif" /></mj-attributes>
   </mj-head>
   <mj-body background-color="#f3f4f6">
-    <mj-section background-color="#4f46e5" padding="28px 0">
+    <mj-section background-color="#4f46e5">
       <mj-column>
-        <mj-text align="center" color="#ffffff" font-size="22px" font-weight="700">Paperplane</mj-text>
+        <mj-text align="center" color="#ffffff" font-size="22px" font-weight="bold">Paperplane</mj-text>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#ffffff" padding="32px 24px">
+    <mj-section background-color="#ffffff">
       <mj-column>
-        <mj-text font-size="24px" font-weight="700" color="#111827">Welcome, {{ user.first_name }}!</mj-text>
-        <mj-text>Your account is ready. Pick a template, add your team and send your first
-          message in under a minute.</mj-text>
-        <mj-button href="{% url 'start' %}" padding-top="12px">Get started</mj-button>
-      </mj-column>
-    </mj-section>
-    <mj-section padding="16px 0 32px">
-      <mj-column>
-        <mj-text align="center" font-size="13px" color="#9ca3af">You are receiving this because you signed up at Paperplane.</mj-text>
+        <mj-text font-size="24px" font-weight="bold">Welcome, {{ user.first_name }}!</mj-text>
+        <mj-text>Your account is ready. Pick a template and send your first message.</mj-text>
+        <mj-button href="{% url 'start' %}" background-color="#4f46e5">Get started</mj-button>
       </mj-column>
     </mj-section>
   </mj-body>
