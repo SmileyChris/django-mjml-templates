@@ -28,7 +28,7 @@ plain-text part comes from [html2text](https://pypi.org/project/html2text/).
 ## Write an email
 
 A Django template first (`{% extends %}`, `{% url %}`, autoescaping), then
-[MJML](https://documentation.mjml.io/) for the layout. `<mj-title>` is the subject.
+[MJML](https://documentation.mjml.io/#standard-body-components) for the layout. `<mj-title>` is the subject.
 
 ```html
 {# templates/email/welcome.mjml #}
