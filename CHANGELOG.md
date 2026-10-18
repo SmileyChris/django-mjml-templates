@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.3.1 (2026-10-19)
 
 - The backend adds the packaged templates as a last template directory, so a project's own
   preview template can `{% extends "mjml_templates/preview_fragment.html" %}` without
   `mjml_templates` in `INSTALLED_APPS`.
+- Docs: a documentation site (https://smileychris.github.io/django-mjml-templates/) and a
+  shorter README.
 
 ## 1.3.0 (2026-10-16)
 
