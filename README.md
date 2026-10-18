@@ -76,14 +76,21 @@ A Django template first (`{% extends %}`, `{% url %}`, autoescaping), then
 ```python
 from django.template.loader import get_template
 
-message = get_template("email/welcome.mjml").render_email({"user": user}, request, to=[user.email])
+template = get_template("email/welcome.mjml")
+message = template.render_email(
+    {"user": user},
+    request,
+    to=[user.email],
+)
 message.send()
 ```
 
-`render_email` returns an unsent `EmailMultiAlternatives`: the subject from `<mj-title>`, the HTML
-from the MJML, and a plain-text part made for you. Attach files, set `reply_to`, or send it from a
-Celery task like any other Django message. Links are made absolute from the request, or from
-`MJML_BASE_URL` when there isn't one.
+`get_template` is Django's own loader, so it finds `.mjml` files the same way it finds any
+template, and the one it hands back also has `render_email`. That returns an unsent
+`EmailMultiAlternatives`: the subject from `<mj-title>`, the HTML from the MJML, and a plain-text
+part made for you. Attach files, set `reply_to`, or send it from a Celery task like any other
+Django message. Links are made absolute from the request, or from `MJML_BASE_URL` when there isn't
+one.
 
 With the styled template, the reader gets:
 
