@@ -22,8 +22,8 @@ TEMPLATES = [{
 ```
 
 Only templates ending in `.mjml` are treated as email; every other template renders as before.
-MJML is compiled by [mjml-python](https://pypi.org/project/mjml-python/) and the plain-text part
-comes from [html2text](https://pypi.org/project/html2text/).
+MJML is compiled by [mjml-python](https://pypi.org/project/mjml-python/) (a prebuilt Rust port) and the
+plain-text part comes from [html2text](https://pypi.org/project/html2text/).
 
 ## Write an email
 
